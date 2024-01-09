@@ -1,4 +1,3 @@
-use sysinfo::Pid;
 use winapi::shared::minwindef::DWORD;
 use winapi::shared::ntdef::HANDLE;
 use winapi::shared::minwindef::MAX_PATH;
@@ -6,8 +5,8 @@ use winapi::um::handleapi::{INVALID_HANDLE_VALUE, CloseHandle};
 use winapi::um::tlhelp32::{CreateToolhelp32Snapshot, TH32CS_SNAPMODULE, MAX_MODULE_NAME32, MODULEENTRY32, Module32First, Module32Next};
 
 pub struct ProcessModule {
-    base: usize,
-    size: usize
+    pub base: usize,
+    pub size: usize
 }
 
 
