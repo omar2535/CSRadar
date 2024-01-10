@@ -3,7 +3,9 @@ use winapi::shared::ntdef::HANDLE;
 use winapi::shared::minwindef::MAX_PATH;
 use winapi::um::handleapi::{INVALID_HANDLE_VALUE, CloseHandle};
 use winapi::um::tlhelp32::{CreateToolhelp32Snapshot, TH32CS_SNAPMODULE, MAX_MODULE_NAME32, MODULEENTRY32, Module32First, Module32Next};
+use read_process_memory::{Pid, ProcessHandle, CopyAddress, copy_address};
 
+// Process Module Struct
 pub struct ProcessModule {
     pub base: usize,
     pub size: usize
@@ -11,7 +13,7 @@ pub struct ProcessModule {
 
 
 // function to get a DLL's base address
-pub unsafe fn get_module(module_name: &str, process_id: u32) -> ProcessModule {
+pub unsafe fn get_module(module_name: &str, process_id: Pid) -> ProcessModule {
     // get a snapshot of the specified process
     let snapshot: HANDLE = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, process_id);
 
@@ -52,7 +54,41 @@ pub unsafe fn get_module(module_name: &str, process_id: u32) -> ProcessModule {
         seen_modules.push(cur_module_name);
     }
 
+    println!("(+) Didn't find any modules with the name: {}", module_name);
+    // println!("(+) Seen modules: {:?}", seen_modules);
+
     // default return
-    println!("(+) Didn't find any modules with the name: {}\n\nSeen modules: {:?}", module_name, seen_modules);
     return ProcessModule { base: 0, size: 0 };
+}
+
+// read memory
+pub unsafe fn read_memory(pid: Pid, address: usize, length: usize) -> u32 {
+    let handle: ProcessHandle = ProcessHandle::try_from(pid).unwrap();
+    let result = copy_address(address, length, &handle);
+    match result {
+        Ok(bytes) => {
+            // println!("Read: {:?}", bytes);
+            return bytes_to_u32_little_endian(&bytes).unwrap();
+        },
+        Err(_) => println!("(+) Failed to read memory")
+    }
+    return 0;
+}
+
+
+// --- Some private helpers ---
+fn bytes_to_u32_big_endian(bytes: &[u8]) -> Result<u32, &'static str> {
+    if bytes.len() != 4 {
+        return Err("Slice must contain exactly 4 bytes");
+    }
+
+    Ok(u32::from_be_bytes(bytes.try_into().expect("Incorrect length")))
+}
+
+fn bytes_to_u32_little_endian(bytes: &[u8]) -> Result<u32, &'static str> {
+    if bytes.len() != 4 {
+        return Err("Slice must contain exactly 4 bytes");
+    }
+
+    Ok(u32::from_le_bytes(bytes.try_into().expect("Incorrect length")))
 }
