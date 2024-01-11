@@ -62,33 +62,37 @@ pub unsafe fn get_module(module_name: &str, process_id: Pid) -> ProcessModule {
 }
 
 // read memory
-pub unsafe fn read_memory(pid: Pid, address: usize, length: usize) -> u32 {
+pub unsafe fn read_memory(pid: Pid, address: usize, length: usize) -> usize {
     let handle: ProcessHandle = ProcessHandle::try_from(pid).unwrap();
     let result = copy_address(address, length, &handle);
     match result {
         Ok(bytes) => {
             // println!("Read: {:?}", bytes);
-            return bytes_to_u32_little_endian(&bytes).unwrap();
+            return bytes_to_little_endian(&bytes).unwrap();
         },
-        Err(_) => println!("(+) Failed to read memory")
+        Err(_) => println!("(E) Failed to read memory for address: 0x{:x}", address)
     }
     return 0;
 }
 
 
 // --- Some private helpers ---
-fn bytes_to_u32_big_endian(bytes: &[u8]) -> Result<u32, &'static str> {
-    if bytes.len() != 4 {
-        return Err("Slice must contain exactly 4 bytes");
+fn bytes_to_big_endian(bytes: &[u8]) -> Result<usize, &'static str> {
+    if bytes.len() == 4 {
+        Ok(u32::from_be_bytes(bytes.try_into().expect("Incorrect length")) as usize)
+    } else if bytes.len() == 8 {
+        Ok(u64::from_be_bytes(bytes.try_into().expect("Incorrect length")) as usize)
+    } else {
+        Err("Slice must contain exactly 4 or 8 bytes")
     }
-
-    Ok(u32::from_be_bytes(bytes.try_into().expect("Incorrect length")))
 }
 
-fn bytes_to_u32_little_endian(bytes: &[u8]) -> Result<u32, &'static str> {
-    if bytes.len() != 4 {
-        return Err("Slice must contain exactly 4 bytes");
+fn bytes_to_little_endian(bytes: &[u8]) -> Result<usize, &'static str> {
+    if bytes.len() == 4 {
+        Ok(u32::from_le_bytes(bytes.try_into().expect("Incorrect length")) as usize)
+    } else if bytes.len() == 8 {
+        Ok(u64::from_le_bytes(bytes.try_into().expect("Incorrect length")) as usize)
+    } else {
+        Err("Slice must contain exactly 4 or 8 bytes")
     }
-
-    Ok(u32::from_le_bytes(bytes.try_into().expect("Incorrect length")))
 }

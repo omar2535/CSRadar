@@ -33,14 +33,34 @@ fn main() {
     }
 
     // Get the memory information
-    let base_client: ProcessModule = unsafe {get_module(BASE_CLIENT_NAME, process_id)};
-    let base_engine: ProcessModule = unsafe {get_module(BASE_ENGINE_NAME, process_id)};
-
+    let client: ProcessModule = unsafe {get_module(BASE_CLIENT_NAME, process_id)};
+    let engine: ProcessModule = unsafe {get_module(BASE_ENGINE_NAME, process_id)};
 
     // Get the build number
     let offsets: Offsets = get_offsets("res/offsets.json");
-    let build_number: u32 = unsafe{ read_memory(process_id, base_engine.base + offsets.dwBuildNumber, 4) };
-    println!("(+) Build number: {}", build_number);
+    let build_number: usize = unsafe{ read_memory(process_id, engine.base + offsets.dwBuildNumber, 4) };
+    println!("(+) Build number: {} | Expected build number: {}", build_number, offsets.build_number);
+    println!("(+) Build number checker: {}", build_number == offsets.build_number);
+
+
+
+
+    // Get the local player
+    let local_player: usize = unsafe{ read_memory(process_id, client.base + offsets.dwLocalPlayerController, 8) };
+    println!("(+) Local player: 0x{:x}", local_player);
+
+    let entity_list: usize = unsafe { read_memory(process_id, client.base + offsets.dwEntityList, 8) };
+    println!("(+) Entity list: 0x{:x}", entity_list);
+
+    // Get the local player's team - 2 for T, 3 for CT
+    let local_player_team: usize = unsafe{ read_memory(process_id, local_player + offsets.m_iTeamNum, 4) };
+    println!("(+) Local player team: 0x{:x}", local_player_team);
+
+    // Get the first entity
+    let player1: usize = unsafe{ read_memory(process_id, entity_list, 4) as usize };
+    println!("(+) Player 1: 0x{:x}", player1);
+
+
 
 
     println!("(+) Stopping CS Radar Hack!");
