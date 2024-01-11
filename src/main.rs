@@ -58,10 +58,6 @@ fn main() {
     let local_player_team: usize = unsafe{ read_memory(process_id, local_player + offsets.m_iTeamNum, 4) };
     println!("(+) Local player team: 0x{:x}", local_player_team);
 
-    // Get the local player
-    let player: player::Player = player::get_player_entity(process_id, entity_list, local_player, &offsets);
-    println!("(+) Player: {:?}", player);
-
     // get the entity
     let mut player_index = 0;
     while player_index < 10 {

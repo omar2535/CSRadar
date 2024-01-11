@@ -70,7 +70,7 @@ pub unsafe fn read_memory(pid: Pid, address: usize, length: usize) -> usize {
             // println!("Read: {:?}", bytes);
             return bytes_to_little_endian(&bytes).unwrap();
         },
-        Err(_) => println!("(E) Failed to read memory for address: 0x{:x}", address)
+        Err(_) => eprintln!("(E) Failed to read memory for address: 0x{:x}", address)
     }
     return 0;
 }
@@ -83,7 +83,7 @@ pub unsafe fn read_string(pid: Pid, address: usize, length: usize) -> String {
             // println!("Read: {:?}", bytes);
             return String::from_utf8(bytes).unwrap();
         },
-        Err(_) => println!("(E) Failed to read memory for address: 0x{:x}", address)
+        Err(_) => eprintln!("(E) Failed to read memory for address: 0x{:x}", address)
     }
     return String::from("");
 }
