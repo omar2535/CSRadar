@@ -33,6 +33,10 @@ fn main() {
             process_id = pid.as_u32();
         }
     }
+    if process_id == 0 {
+        println!("(-) Process not found!");
+        return;
+    }
 
     // Get the memory information
     let client: ProcessModule = unsafe {get_module(BASE_CLIENT_NAME, process_id)};
@@ -46,13 +50,13 @@ fn main() {
 
 
 
+    // Get the entity list
+    let entity_list: usize = unsafe { read_memory(process_id, client.base + offsets.dwEntityList, 8) };
+    println!("(+) Entity list: 0x{:x}", entity_list);
 
     // Get the local player
     let local_player: usize = unsafe{ read_memory(process_id, client.base + offsets.dwLocalPlayerController, 8) };
     println!("(+) Local player: 0x{:x}", local_player);
-
-    let entity_list: usize = unsafe { read_memory(process_id, client.base + offsets.dwEntityList, 8) };
-    println!("(+) Entity list: 0x{:x}", entity_list);
 
     // Get the local player's team - 2 for T, 3 for CT
     let local_player_team: usize = unsafe{ read_memory(process_id, local_player + offsets.m_iTeamNum, 4) };
@@ -60,11 +64,11 @@ fn main() {
 
     // get the entity
     let mut player_index = 0;
-    while player_index < 10 {
+    while player_index < 16 {
         player_index += 1;
         println!("(+) Player index: {}", player_index);
         let player_entity: player::Player = player::get_player_entity(process_id, entity_list, player_index, &offsets);
-        if player_entity.player_entity == 0 {
+        if player_entity.player_controller_addr == 0 {
             continue;
         }
         println!("(+) Entity Player: {:?}", player_entity);
