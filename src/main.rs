@@ -2,6 +2,7 @@
 #![allow(unused_imports)]
 
 mod utils;
+mod entities;
 
 use sysinfo::System;
 use utils::memory::{get_module, ProcessModule, read_memory};
@@ -9,6 +10,7 @@ use utils::offsets::{get_offsets, Offsets};
 use std::{thread, time::Duration, io::stdout};
 use std::io::Write;
 use read_process_memory::{Pid, ProcessHandle, CopyAddress, copy_address};
+use entities::player;
 
 fn main() {
     println!("(+) Starting CS Radar Hack!");
@@ -56,11 +58,21 @@ fn main() {
     let local_player_team: usize = unsafe{ read_memory(process_id, local_player + offsets.m_iTeamNum, 4) };
     println!("(+) Local player team: 0x{:x}", local_player_team);
 
-    // Get the first entity
-    let player1: usize = unsafe{ read_memory(process_id, entity_list, 4) as usize };
-    println!("(+) Player 1: 0x{:x}", player1);
+    // Get the local player
+    let player: player::Player = player::get_player_entity(process_id, entity_list, local_player, &offsets);
+    println!("(+) Player: {:?}", player);
 
-
+    // get the entity
+    let mut player_index = 0;
+    while player_index < 10 {
+        player_index += 1;
+        println!("(+) Player index: {}", player_index);
+        let player_entity: player::Player = player::get_player_entity(process_id, entity_list, player_index, &offsets);
+        if player_entity.player_entity == 0 {
+            continue;
+        }
+        println!("(+) Entity Player: {:?}", player_entity);
+    }
 
 
     println!("(+) Stopping CS Radar Hack!");

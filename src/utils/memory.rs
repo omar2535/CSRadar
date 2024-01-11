@@ -75,6 +75,19 @@ pub unsafe fn read_memory(pid: Pid, address: usize, length: usize) -> usize {
     return 0;
 }
 
+pub unsafe fn read_string(pid: Pid, address: usize, length: usize) -> String {
+    let handle: ProcessHandle = ProcessHandle::try_from(pid).unwrap();
+    let result = copy_address(address, length, &handle);
+    match result {
+        Ok(bytes) => {
+            // println!("Read: {:?}", bytes);
+            return String::from_utf8(bytes).unwrap();
+        },
+        Err(_) => println!("(E) Failed to read memory for address: 0x{:x}", address)
+    }
+    return String::from("");
+}
+
 
 // --- Some private helpers ---
 fn bytes_to_big_endian(bytes: &[u8]) -> Result<usize, &'static str> {
