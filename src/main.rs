@@ -12,6 +12,7 @@ use std::io::Write;
 use read_process_memory::{Pid, ProcessHandle, CopyAddress, copy_address};
 use entities::player;
 
+
 fn main() {
     println!("(+) Starting CS Radar Hack!");
 
@@ -66,12 +67,11 @@ fn main() {
     let mut player_index = 0;
     while player_index < 16 {
         player_index += 1;
-        println!("(+) Player index: {}", player_index);
         let player_entity: player::Player = player::get_player_entity(process_id, entity_list, player_index, &offsets);
         if player_entity.player_controller_addr == 0 {
             continue;
         }
-        println!("(+) Entity Player: {:?}", player_entity);
+        player::print_player(player_entity);
     }
 
 

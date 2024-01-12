@@ -80,8 +80,9 @@ pub unsafe fn read_string(pid: Pid, address: usize, length: usize) -> String {
     let result = copy_address(address, length, &handle);
     match result {
         Ok(bytes) => {
-            // println!("Read: {:?}", bytes);
-            return String::from_utf8(bytes).unwrap();
+            let mut res: &str = &String::from_utf8(bytes).unwrap();
+            res = res.trim_matches(char::from(0));
+            return res.to_owned();
         },
         Err(_) => eprintln!("(E) Failed to read memory for address: 0x{:x}", address)
     }
