@@ -63,15 +63,21 @@ fn main() {
     let local_player_team: usize = unsafe{ read_memory(process_id, local_player + offsets.m_iTeamNum, 4) };
     println!("(+) Local player team: 0x{:x}", local_player_team);
 
-    // get the entity
-    let mut player_index = 0;
-    while player_index < 16 {
-        player_index += 1;
-        let player_entity: player::Player = player::get_player_entity(process_id, entity_list, player_index, &offsets);
-        if player_entity.player_controller_addr == 0 {
-            continue;
+    // main hack loop
+    loop {
+        let mut player_index: usize = 0;
+        let mut players: Vec<player::Player> = Vec::new();
+        while player_index < 16 {
+            player_index += 1;
+            let player_entity: player::Player = player::get_player_entity(process_id, entity_list, player_index, &offsets);
+            if player_entity.player_controller_addr != 0 {
+                players.push(player_entity);
+            }
         }
-        player::print_player(player_entity);
+        player::print_players(&players);
+        // clear the screen
+        print!("{}[2J", 27 as char);
+        thread::sleep(SLEEP_TIME);
     }
 
 

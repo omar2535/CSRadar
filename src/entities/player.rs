@@ -45,9 +45,27 @@ pub fn get_player_entity(process_id: Pid, entity_list: usize, player_index: usiz
 }
 
 // prints a player
-pub fn print_player(player: Player) {
+pub fn print_player(player: &Player) {
     if player.player_controller_addr == 0 || player.player_pawn_addr == 0 {
         return;
     }
     println!("[{}], team: {}, health: {}, armor: {}", player.name, player.team, player.health, player.armor);
+}
+
+pub fn print_players(players: &Vec<Player>) {
+    // print T
+    println!("T");
+    for player in players {
+        if player.team == 2 {
+            print_player(&player);
+        }
+    }
+
+    // print CT
+    println!("CT");
+    for player in players {
+        if player.team == 3 {
+            print_player(&player);
+        }
+    }
 }
