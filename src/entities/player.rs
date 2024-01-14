@@ -49,6 +49,7 @@ pub fn print_player(player: &Player) {
     if player.player_controller_addr == 0 || player.player_pawn_addr == 0 {
         return;
     }
+    println!("Debug: player_controller_addr: 0x{:x}, player_pawn_addr: 0x{:x}", player.player_controller_addr, player.player_pawn_addr);
     println!("[{}], team: {}, health: {}, armor: {}", player.name, player.team, player.health, player.armor);
 }
 
