@@ -89,6 +89,18 @@ pub unsafe fn read_string(pid: Pid, address: usize, length: usize) -> String {
     return String::from("");
 }
 
+pub unsafe fn read_float(pid: Pid, address: usize) -> f32 {
+    let handle: ProcessHandle = ProcessHandle::try_from(pid).unwrap();
+    let result = copy_address(address, 4, &handle);
+    match result {
+        Ok(bytes) => {
+            return f32::from_le_bytes(bytes.try_into().expect("Incorrect length"));
+        },
+        Err(_) => eprintln!("(E) Failed to read memory for address: 0x{:x}", address)
+    }
+    return 0.0;
+}
+
 
 // --- Some private helpers ---
 fn bytes_to_big_endian(bytes: &[u8]) -> Result<usize, &'static str> {

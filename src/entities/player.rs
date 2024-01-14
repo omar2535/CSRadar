@@ -10,7 +10,14 @@ pub struct Player {
     pub team: usize,
     pub health: usize,
     pub armor: usize,
-    pub name: String
+    pub name: String,
+}
+
+#[derive(Debug)]
+pub struct Position {
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
 }
 
 // Player
@@ -33,6 +40,10 @@ pub fn get_player_entity(process_id: Pid, entity_list: usize, player_index: usiz
 
     let player_health: usize = unsafe{ memory::read_memory(process_id, player_pawn + offsets.m_iHealth, 4) };
     let player_armor: usize = unsafe { memory::read_memory(process_id, player_pawn + offsets.m_ArmorValue, 4) };
+    let player_position: Position = get_player_position(process_id, player_pawn, offsets);
+
+    println!("Debug: player_position_addr: 0x{:x}", player_pawn + offsets.m_vOldOrigin);
+    println!("Debug: player_position: {:?}", player_position);
 
     return Player {
         player_controller_addr: player_controller,
@@ -40,7 +51,19 @@ pub fn get_player_entity(process_id: Pid, entity_list: usize, player_index: usiz
         health: player_health,
         team: player_team,
         armor: player_armor,
-        name: player_name
+        name: player_name,
+    };
+}
+
+fn get_player_position(process_id: Pid, player_pawn: usize, offsets: &Offsets) -> Position {
+    let player_position_x: f32 = unsafe { memory::read_float(process_id, player_pawn + offsets.m_vOldOrigin) };
+    let player_position_y: f32 = unsafe { memory::read_float(process_id, player_pawn + offsets.m_vOldOrigin + 4) };
+    let player_position_z: f32 = unsafe { memory::read_float(process_id, player_pawn + offsets.m_vOldOrigin + 8) };
+
+    return Position {
+        x: player_position_x,
+        y: player_position_y,
+        z: player_position_z,
     };
 }
 
@@ -49,7 +72,7 @@ pub fn print_player(player: &Player) {
     if player.player_controller_addr == 0 || player.player_pawn_addr == 0 {
         return;
     }
-    println!("Debug: player_controller_addr: 0x{:x}, player_pawn_addr: 0x{:x}", player.player_controller_addr, player.player_pawn_addr);
+    // println!("Debug: player_controller_addr: 0x{:x}, player_pawn_addr: 0x{:x}", player.player_controller_addr, player.player_pawn_addr);
     println!("[{}], team: {}, health: {}, armor: {}", player.name, player.team, player.health, player.armor);
 }
 
