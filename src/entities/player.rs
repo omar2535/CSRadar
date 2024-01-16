@@ -1,5 +1,6 @@
 use crate::utils::offsets::Offsets;
 use crate::utils::memory;
+use crate::cs2_offsets::client_dll;
 
 use read_process_memory::{Pid, ProcessHandle, CopyAddress, copy_address};
 
@@ -11,6 +12,7 @@ pub struct Player {
     pub health: usize,
     pub armor: usize,
     pub name: String,
+    pub position: Position
 }
 
 #[derive(Debug)]
@@ -24,26 +26,23 @@ pub struct Position {
 // Split into 2 parts
 // P1 - player controller
 // P2 - player pawn entity
-pub fn get_player_entity(process_id: Pid, entity_list: usize, player_index: usize, offsets: &Offsets) -> Player {
+pub fn get_player_entity(process_id: Pid, entity_list: usize, player_index: usize) -> Player {
     // 0x7FFF = 32767 = largest signed 16 bit number that is possible for number of players
     let list_entry: usize = unsafe{ memory::read_memory(process_id, entity_list + (8 * ((player_index & 0x7FFF) >> 9)) + 16, 8) };
     let player_controller: usize = unsafe{ memory::read_memory(process_id, list_entry + 120 * (player_index & 0x1FF), 8) };
 
     // find the player pawn
-    let pawn_handle: usize = unsafe{ memory::read_memory(process_id, player_controller + offsets.m_hPlayerPawn, 8) };
+    let pawn_handle: usize = unsafe{ memory::read_memory(process_id, player_controller + client_dll::CCSPlayerController::m_hPlayerPawn, 8) };
     let list_entry_2: usize = unsafe{ memory::read_memory(process_id, entity_list + 8 * ((pawn_handle & 0x7FFF) >> 9) + 16, 8) };
     let player_pawn: usize = unsafe{ memory::read_memory(process_id, list_entry_2 + 120 * (pawn_handle & 0x1FF), 8) };
 
     // get information
-    let player_team: usize = unsafe{ memory::read_memory(process_id, player_controller + offsets.m_iTeamNum, 4) };
-    let player_name: String = unsafe { memory::read_string(process_id, player_controller + offsets.m_sSanitizedPlayerName, 16) };
+    let player_team: usize = unsafe{ memory::read_memory(process_id, player_controller + client_dll::C_BaseEntity::m_iTeamNum, 4) };
+    let player_name: String = unsafe { memory::read_string(process_id, player_controller + client_dll::CBasePlayerController::m_iszPlayerName, 16) };
 
-    let player_health: usize = unsafe{ memory::read_memory(process_id, player_pawn + offsets.m_iHealth, 4) };
-    let player_armor: usize = unsafe { memory::read_memory(process_id, player_pawn + offsets.m_ArmorValue, 4) };
-    let player_position: Position = get_player_position(process_id, player_pawn, offsets);
-
-    println!("Debug: player_position_addr: 0x{:x}", player_pawn + offsets.m_vOldOrigin);
-    println!("Debug: player_position: {:?}", player_position);
+    let player_health: usize = unsafe{ memory::read_memory(process_id, player_pawn + client_dll::C_BaseEntity::m_iHealth, 4) };
+    let player_armor: usize = unsafe { memory::read_memory(process_id, player_pawn + client_dll::C_CSPlayerPawnBase::m_ArmorValue, 4) };
+    let player_position: Position = get_player_position(process_id, player_pawn);
 
     return Player {
         player_controller_addr: player_controller,
@@ -52,13 +51,14 @@ pub fn get_player_entity(process_id: Pid, entity_list: usize, player_index: usiz
         team: player_team,
         armor: player_armor,
         name: player_name,
+        position: player_position
     };
 }
 
-fn get_player_position(process_id: Pid, player_pawn: usize, offsets: &Offsets) -> Position {
-    let player_position_x: f32 = unsafe { memory::read_float(process_id, player_pawn + offsets.m_vOldOrigin) };
-    let player_position_y: f32 = unsafe { memory::read_float(process_id, player_pawn + offsets.m_vOldOrigin + 4) };
-    let player_position_z: f32 = unsafe { memory::read_float(process_id, player_pawn + offsets.m_vOldOrigin + 8) };
+fn get_player_position(process_id: Pid, player_pawn: usize) -> Position {
+    let player_position_x: f32 = unsafe { memory::read_float(process_id, player_pawn + client_dll::C_BasePlayerPawn::m_vOldOrigin) };
+    let player_position_y: f32 = unsafe { memory::read_float(process_id, player_pawn + client_dll::C_BasePlayerPawn::m_vOldOrigin + 4) };
+    let player_position_z: f32 = unsafe { memory::read_float(process_id, player_pawn + client_dll::C_BasePlayerPawn::m_vOldOrigin + 8) };
 
     return Position {
         x: player_position_x,
@@ -73,7 +73,8 @@ pub fn print_player(player: &Player) {
         return;
     }
     // println!("Debug: player_controller_addr: 0x{:x}, player_pawn_addr: 0x{:x}", player.player_controller_addr, player.player_pawn_addr);
-    println!("[{}], team: {}, health: {}, armor: {}", player.name, player.team, player.health, player.armor);
+    println!("[{}], team: {}, health: {}, armor: {}, pos: {:?}", player.name, player.team, player.health, player.armor, player.position);
+    // println!("x: {}, y: {}, z: {}", player.position.x, player.position.y, player.position.z);
 }
 
 pub fn print_players(players: &Vec<Player>) {
