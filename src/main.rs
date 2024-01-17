@@ -17,6 +17,7 @@ use entities::player;
 use cs2_offsets::client_dll;
 use cs2_offsets::engine2_dll;
 use cs2_offsets::offsets;
+use cs2_offsets::server_dll;
 
 // define a constant
 static BUILD_NUMBER: usize = 13984;
@@ -29,6 +30,7 @@ fn main() {
     const PROCESS_NAME: &str = "cs2.exe";
     const BASE_CLIENT_NAME: &str = "client.dll";
     const BASE_ENGINE_NAME: &str = "engine2.dll";
+    const BASE_SERVER_NAME: &str = "server.dll";
     const SLEEP_TIME: Duration = Duration::from_secs(1);
 
     // intialize the system
@@ -51,6 +53,7 @@ fn main() {
     // Get the memory information
     let client: ProcessModule = unsafe {get_module(BASE_CLIENT_NAME, process_id)};
     let engine: ProcessModule = unsafe {get_module(BASE_ENGINE_NAME, process_id)};
+    let server: ProcessModule = unsafe {get_module(BASE_SERVER_NAME, process_id)};
 
     // Get the build number
     let build_number: usize = unsafe{ read_memory(process_id, engine.base + offsets::engine2_dll::dwBuildNumber, 4) };
@@ -70,8 +73,8 @@ fn main() {
     println!("(+) Local player team: 0x{:x}", local_player_team);
 
     // Get map name
-    // 188FFAE
-    let map_name: String = unsafe { read_string(process_id, client.base + 0x188FFAE, 16) };
+    // 0X577C2F
+    let map_name: String = unsafe { read_string(process_id, engine.base + 0x577C30, 16) };
     println!("(+) Map name: {}", map_name);
 
     // main hack loop
