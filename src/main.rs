@@ -12,7 +12,11 @@ use utils::offsets::{get_offsets, Offsets};
 use std::{thread, time::Duration, io::stdout};
 use std::io::Write;
 use read_process_memory::{Pid, ProcessHandle, CopyAddress, copy_address};
+use winapi::um::winuser::VK_SHIFT;
 use entities::player;
+
+// features
+use features::triggerbot::triggetbot;
 
 // Offsets
 use cs2_offsets::client_dll;
@@ -104,6 +108,9 @@ fn main() {
         let player_entity: player::Player = player::get_player_entity(process_id, entity_list, player_index);
         player::print_player(&player_entity);
     }
+
+    // run my features
+    unsafe { triggetbot(process_id, entity_list, VK_SHIFT) };
 
     println!("(+) Stopping CS Radar Hack!");
 }

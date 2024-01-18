@@ -7,7 +7,7 @@ edition = "2021"
 
 
 [dependencies]
-winapi = { version = "0.3", features = ["tlhelp32", "winnt"] }
+winapi = { version = "0.3.9", features = ["tlhelp32", "winnt", "winuser"] }
 sysinfo = { version = "0.30.5" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
