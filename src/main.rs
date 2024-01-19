@@ -7,6 +7,7 @@ mod cs2_offsets;
 mod features;
 
 use sysinfo::System;
+use clearscreen;
 use utils::memory::{get_module, ProcessModule, read_memory, read_string};
 use utils::offsets::{get_offsets, Offsets};
 use std::{thread, time::Duration, io::stdout};
@@ -36,7 +37,7 @@ fn main() {
     const BASE_CLIENT_NAME: &str = "client.dll";
     const BASE_ENGINE_NAME: &str = "engine2.dll";
     const BASE_SERVER_NAME: &str = "server.dll";
-    const SLEEP_TIME: Duration = Duration::from_secs(1);
+    const SLEEP_TIME: Duration = Duration::from_millis(1);
 
     // intialize the system
     let mut sys = System::new_all();
@@ -83,34 +84,37 @@ fn main() {
     println!("(+) Map name: {}", map_name);
 
     // main hack loop
-    // loop {
-    //     let mut player_index: usize = 0;
-    //     let mut players: Vec<player::Player> = Vec::new();
-    //     while player_index < 16 {
-    //         player_index += 1;
-    //         let player_entity: player::Player = player::get_player_entity(process_id, entity_list, player_index, &offsets);
-    //         if player_entity.player_controller_addr != 0 {
-    //             players.push(player_entity);
-    //         }
-    //     }
-    //     player::print_players(&players);
-    //     // clear the screen
-    //     print!("{}[2J", 27 as char);
-    //     thread::sleep(SLEEP_TIME);
-    // }
+    loop {
+        // regular player statistics
+        let mut player_index: usize = 0;
+        let mut players: Vec<player::Player> = Vec::new();
+        while player_index < 16 {
+            player_index += 1;
+            let player_entity: player::Player = player::get_player_entity(process_id, entity_list, player_index);
+            if player_entity.player_controller_addr != 0 {
+                players.push(player_entity);
+            }
+        }
+        player::print_players(&players);
 
-    // TODO: Remove this
+        // other features
+        // run my features
+        unsafe { triggetbot(process_id, &client, entity_list, VK_SHIFT) };
 
-    let mut player_index: usize = 0;
-    let mut players: Vec<player::Player> = Vec::new();
-    while player_index < 16 {
-        player_index += 1;
-        let player_entity: player::Player = player::get_player_entity(process_id, entity_list, player_index);
-        player::print_player(&player_entity);
+
+        // clear the screen
+        clearscreen::clear().expect("Failed to clear screen!");
+        thread::sleep(SLEEP_TIME);
     }
 
-    // run my features
-    unsafe { triggetbot(process_id, entity_list, VK_SHIFT) };
+    // TODO: Remove this
+    // let mut player_index: usize = 0;
+    // let mut players: Vec<player::Player> = Vec::new();
+    // while player_index < 16 {
+    //     player_index += 1;
+    //     let player_entity: player::Player = player::get_player_entity(process_id, entity_list, player_index);
+    //     player::print_player(&player_entity);
+    // }
 
     println!("(+) Stopping CS Radar Hack!");
 }

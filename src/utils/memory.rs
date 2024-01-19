@@ -75,6 +75,19 @@ pub unsafe fn read_memory(pid: Pid, address: usize, length: usize) -> usize {
     return 0;
 }
 
+pub unsafe fn read_int(pid: Pid, address: usize, length: usize) -> isize {
+    let handle: ProcessHandle = ProcessHandle::try_from(pid).unwrap();
+    let result = copy_address(address, length, &handle);
+    match result {
+        Ok(bytes) => {
+            // println!("Read: {:?}", bytes);
+            return bytes_to_little_endian_int(&bytes).unwrap();
+        },
+        Err(_) => eprintln!("(E) Failed to read memory for address: 0x{:x}", address)
+    }
+    return 0;
+}
+
 pub unsafe fn read_string(pid: Pid, address: usize, length: usize) -> String {
     let handle: ProcessHandle = ProcessHandle::try_from(pid).unwrap();
     let result = copy_address(address, length, &handle);
@@ -118,6 +131,16 @@ fn bytes_to_little_endian(bytes: &[u8]) -> Result<usize, &'static str> {
         Ok(u32::from_le_bytes(bytes.try_into().expect("Incorrect length")) as usize)
     } else if bytes.len() == 8 {
         Ok(u64::from_le_bytes(bytes.try_into().expect("Incorrect length")) as usize)
+    } else {
+        Err("Slice must contain exactly 4 or 8 bytes")
+    }
+}
+
+fn bytes_to_little_endian_int(bytes: &[u8]) -> Result<isize, &'static str> {
+    if bytes.len() == 4 {
+        Ok(i32::from_le_bytes(bytes.try_into().expect("Incorrect length")) as isize)
+    } else if bytes.len() == 8 {
+        Ok(i64::from_le_bytes(bytes.try_into().expect("Incorrect length")) as isize)
     } else {
         Err("Slice must contain exactly 4 or 8 bytes")
     }
