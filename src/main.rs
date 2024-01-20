@@ -27,7 +27,7 @@ use cs2_offsets::server_dll;
 
 // define a constant
 static BUILD_NUMBER: usize = 13985;
-static DEBUG: bool = true;
+static DEBUG: bool = false;
 
 
 fn main() {
@@ -120,7 +120,7 @@ fn main() {
         // regular player statistics
         let mut player_index: usize = 0;
         let mut players: Vec<player::Player> = Vec::new();
-        while player_index < 10 {
+        while player_index < 64 {
             player_index += 1;
             let player_entity: player::Player = player::get_player_entity(process_id, entity_list, player_index);
             if player_entity.player_controller_addr != 0 {

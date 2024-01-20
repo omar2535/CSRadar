@@ -1,9 +1,12 @@
 use crate::utils::memory::ProcessModule;
 use crate::utils::memory;
 use crate::cs2_offsets;
+
+use std::{thread, time::Duration, io::stdout};
 use enigo::{self, MouseControllable};
 use read_process_memory::{Pid, ProcessHandle, CopyAddress, copy_address};
 use winapi::um::winuser::{GetAsyncKeyState, VK_SHIFT};
+use rand::Rng;
 
 // main triggerbot function
 pub unsafe fn triggetbot(process_id: Pid, client: &ProcessModule, entity_list: usize, key: i32) {
@@ -28,14 +31,22 @@ pub unsafe fn triggetbot(process_id: Pid, client: &ProcessModule, entity_list: u
 
         // fire if the pointed player is not on our team
         if pointed_player_team != player_team {
+            thread::sleep(get_random_microsecond_duration());
             let mut enigo = enigo::Enigo::new();
             enigo.mouse_click(enigo::MouseButton::Left);
         }
 
-        println!("(+) Pointed player team: {} | Player team: {}", pointed_player_team, player_team);
+        // println!("(+) Pointed player team: {} | Player team: {}", pointed_player_team, player_team);
     }
 }
 
 pub unsafe fn is_key_pressed(key: i32) -> bool {
     return GetAsyncKeyState(key) != 0;
+}
+
+// get a random microsecond duration
+fn get_random_microsecond_duration() -> Duration {
+    let mut rng = rand::thread_rng();
+    let microseconds = rng.gen_range(1..=1000);
+    Duration::from_micros(microseconds)
 }
