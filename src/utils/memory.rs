@@ -93,8 +93,12 @@ pub unsafe fn read_string(pid: Pid, address: usize, length: usize) -> String {
     let result = copy_address(address, length, &handle);
     match result {
         Ok(bytes) => {
-            let mut res: &str = &String::from_utf8(bytes).unwrap();
-            res = res.trim_matches(char::from(0));
+            let bytes_clone: Vec<u8> = bytes.clone();
+            let mut res: String = match String::from_utf8(bytes_clone) {
+                Ok(res) => res,
+                Err(_) => { println!("Found invalid UTF-8, giving default name"); String::from("Unknown") }
+            };
+            res = res.trim_matches(char::from(0)).to_string();
             return res.to_owned();
         },
         Err(_) => eprintln!("(E) Failed to read memory for address: 0x{:x}", address)

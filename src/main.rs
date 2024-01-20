@@ -13,7 +13,7 @@ use utils::offsets::{get_offsets, Offsets};
 use std::{thread, time::Duration, io::stdout};
 use std::io::Write;
 use read_process_memory::{Pid, ProcessHandle, CopyAddress, copy_address};
-use winapi::um::winuser::VK_SHIFT;
+use winapi::um::winuser;
 use entities::player;
 
 // features
@@ -28,7 +28,7 @@ use cs2_offsets::server_dll;
 // define a constant
 static BUILD_NUMBER: usize = 13985;
 static DEBUG: bool = false;
-
+static TRIGGERBOT_KEY: i32 = winuser::VK_MENU;
 
 fn main() {
     println!("(+) Starting CS Radar Hack!");
@@ -87,8 +87,8 @@ fn main() {
 
     // Get map name
     // 0X577C2F
-    let map_name: String = unsafe { read_string(process_id, engine.base + 0x577C30, 16) };
-    println!("(+) Map name: {}", map_name);
+    // let map_name: String = unsafe { read_string(process_id, engine.base + 0x577C30, 16) };
+    // println!("(+) Map name: {}", map_name);
 
     // main hack loop
     // TODO: REFACTOR THIS -- ITS JUST DUPLICATING CODE
@@ -108,8 +108,7 @@ fn main() {
 
             // other features
             // run my features
-            unsafe { triggetbot(process_id, &client, entity_list, VK_SHIFT) };
-
+            unsafe { triggetbot(process_id, &client, entity_list, TRIGGERBOT_KEY) };
 
             // clear the screen
             // clearscreen::clear().expect("Failed to clear screen!");
@@ -131,7 +130,7 @@ fn main() {
 
         // other features
         // run my features
-        unsafe { triggetbot(process_id, &client, entity_list, VK_SHIFT) };
+        unsafe { triggetbot(process_id, &client, entity_list, TRIGGERBOT_KEY) };
     }
 
     // TODO: Remove this

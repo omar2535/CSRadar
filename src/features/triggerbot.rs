@@ -31,7 +31,8 @@ pub unsafe fn triggetbot(process_id: Pid, client: &ProcessModule, entity_list: u
 
         // fire if the pointed player is not on our team
         if pointed_player_team != player_team {
-            thread::sleep(get_random_microsecond_duration());
+            let delay: Duration = get_random_microsecond_duration();
+            thread::sleep(delay);
             let mut enigo = enigo::Enigo::new();
             enigo.mouse_click(enigo::MouseButton::Left);
         }
