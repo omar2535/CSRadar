@@ -26,7 +26,7 @@ use cs2_offsets::offsets;
 use cs2_offsets::server_dll;
 
 // define a constant
-static BUILD_NUMBER: usize = 13984;
+static BUILD_NUMBER: usize = 13985;
 static DEBUG: bool = true;
 
 
@@ -79,6 +79,12 @@ fn main() {
     let local_player_team: usize = unsafe{ read_memory(process_id, local_player + client_dll::C_BaseEntity::m_iTeamNum, 4) };
     println!("(+) Local player team: 0x{:x}", local_player_team);
 
+    // sanity check before proceeding
+    if build_number == 0 || entity_list == 0 || local_player == 0 || local_player_team == 0 {
+        println!("(-) Failed to get required information!");
+        return;
+    }
+
     // Get map name
     // 0X577C2F
     let map_name: String = unsafe { read_string(process_id, engine.base + 0x577C30, 16) };
@@ -114,7 +120,7 @@ fn main() {
         // regular player statistics
         let mut player_index: usize = 0;
         let mut players: Vec<player::Player> = Vec::new();
-        while player_index < 64 {
+        while player_index < 10 {
             player_index += 1;
             let player_entity: player::Player = player::get_player_entity(process_id, entity_list, player_index);
             if player_entity.player_controller_addr != 0 {
