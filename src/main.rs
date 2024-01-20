@@ -27,6 +27,7 @@ use cs2_offsets::server_dll;
 
 // define a constant
 static BUILD_NUMBER: usize = 13984;
+static DEBUG: bool = true;
 
 
 fn main() {
@@ -84,11 +85,36 @@ fn main() {
     println!("(+) Map name: {}", map_name);
 
     // main hack loop
-    loop {
+    // TODO: REFACTOR THIS -- ITS JUST DUPLICATING CODE
+    if !DEBUG {
+        loop {
+            // regular player statistics
+            let mut player_index: usize = 0;
+            let mut players: Vec<player::Player> = Vec::new();
+            while player_index < 64 {
+                player_index += 1;
+                let player_entity: player::Player = player::get_player_entity(process_id, entity_list, player_index);
+                if player_entity.player_controller_addr != 0 {
+                    players.push(player_entity);
+                }
+            }
+            player::print_players(&players);
+
+            // other features
+            // run my features
+            unsafe { triggetbot(process_id, &client, entity_list, VK_SHIFT) };
+
+
+            // clear the screen
+            // clearscreen::clear().expect("Failed to clear screen!");
+            print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+            thread::sleep(SLEEP_TIME);
+        }
+    } else {
         // regular player statistics
         let mut player_index: usize = 0;
         let mut players: Vec<player::Player> = Vec::new();
-        while player_index < 16 {
+        while player_index < 64 {
             player_index += 1;
             let player_entity: player::Player = player::get_player_entity(process_id, entity_list, player_index);
             if player_entity.player_controller_addr != 0 {
@@ -100,12 +126,6 @@ fn main() {
         // other features
         // run my features
         unsafe { triggetbot(process_id, &client, entity_list, VK_SHIFT) };
-
-
-        // clear the screen
-        // clearscreen::clear().expect("Failed to clear screen!");
-        print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
-        thread::sleep(SLEEP_TIME);
     }
 
     // TODO: Remove this
