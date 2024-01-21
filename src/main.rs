@@ -92,22 +92,38 @@ fn main() {
     // let map_name: String = unsafe { read_string(process_id, engine.base + 0x577C30, 16) };
     // println!("(+) Map name: {}", map_name);
 
-    // main hack loop
-    // TODO: REFACTOR THIS -- ITS JUST DUPLICATING CODE
+    // MAIN HACK LOOP - WE RUN EACH FEATURE IN ITS OWN THREAD
     let mut step_by = 0;
     if DEBUG { step_by = 1; }
 
-    for _x in (0..1).step_by(step_by) {
-        // run my features
-        unsafe { radar(process_id, entity_list) };
+    // run my features
+    let radar_handle = thread::spawn(move || {
+        let mut i = 0;
+        while i < 1 {
+            unsafe { radar(process_id, entity_list) };
+            print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+            thread::sleep(SLEEP_TIME);
 
-        unsafe { triggetbot(process_id, &client, entity_list, TRIGGERBOT_KEY) };
+            // increment the counter (don't increment when running in prod)
+            i += step_by;
+        }
+    });
 
-        // clear the screen
-        // clearscreen::clear().expect("Failed to clear screen!");
-        print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
-        thread::sleep(SLEEP_TIME);
-    }
+    let triggerbot_handle = thread::spawn(move || {
+        let mut i = 0;
+        while i < 1 {
+            unsafe { triggetbot(process_id, &client, entity_list, TRIGGERBOT_KEY) };
+
+            // increment the counter (don't increment when running in prod)
+            i += step_by;
+        }
+    });
+
+
+    // Join the threads back
+    radar_handle.join().unwrap();
+    triggerbot_handle.join().unwrap();
+
 
     println!("(+) Stopping CS Radar Hack!");
 }

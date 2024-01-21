@@ -6,11 +6,11 @@ use winapi::um::tlhelp32::{CreateToolhelp32Snapshot, TH32CS_SNAPMODULE, MAX_MODU
 use read_process_memory::{Pid, ProcessHandle, CopyAddress, copy_address};
 
 // Process Module Struct
+#[derive(Clone, Copy)]
 pub struct ProcessModule {
     pub base: usize,
     pub size: usize
 }
-
 
 // function to get a DLL's base address
 pub unsafe fn get_module(module_name: &str, process_id: Pid) -> ProcessModule {
