@@ -1,4 +1,3 @@
-use crate::utils::offsets::Offsets;
 use crate::utils::memory;
 use crate::cs2_offsets::client_dll;
 

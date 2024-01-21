@@ -9,23 +9,22 @@ mod features;
 use sysinfo::System;
 use clearscreen;
 use utils::memory::{get_module, ProcessModule, read_memory, read_string};
-use utils::offsets::{get_offsets, Offsets};
-use std::{thread, time::Duration, io::stdout};
-use std::io::Write;
 use read_process_memory::{Pid, ProcessHandle, CopyAddress, copy_address};
+use std::{thread, time::Duration, io::stdout, io::Write};
 use winapi::um::winuser;
+
+// Local library
 use entities::player;
 
 // features
 use features::triggerbot::triggetbot;
+use features::radar::radar;
 
 // Offsets
 use cs2_offsets::client_dll;
 use cs2_offsets::engine2_dll;
 use cs2_offsets::offsets;
 use cs2_offsets::server_dll;
-
-use crate::features::radar::radar;
 
 // define a constant
 static BUILD_NUMBER: usize = 13985;
@@ -62,7 +61,6 @@ fn main() {
     // Get the memory information
     let client: ProcessModule = unsafe {get_module(BASE_CLIENT_NAME, process_id)};
     let engine: ProcessModule = unsafe {get_module(BASE_ENGINE_NAME, process_id)};
-    let server: ProcessModule = unsafe {get_module(BASE_SERVER_NAME, process_id)};
 
     // Get the build number
     let build_number: usize = unsafe{ read_memory(process_id, engine.base + offsets::engine2_dll::dwBuildNumber, 4) };
