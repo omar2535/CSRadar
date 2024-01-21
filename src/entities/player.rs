@@ -2,8 +2,9 @@ use crate::utils::memory;
 use crate::cs2_offsets::client_dll;
 
 use read_process_memory::{Pid, ProcessHandle, CopyAddress, copy_address};
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Player {
     pub player_controller_addr: usize,
     pub player_pawn_addr: usize,
@@ -14,7 +15,7 @@ pub struct Player {
     pub position: Position
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Position {
     pub x: f32,
     pub y: f32,

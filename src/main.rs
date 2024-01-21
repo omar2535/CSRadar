@@ -7,16 +7,17 @@ mod cs2_offsets;
 mod features;
 
 use sysinfo::System;
-use clearscreen;
-use utils::memory::{get_module, ProcessModule, read_memory, read_string};
 use read_process_memory::{Pid, ProcessHandle, CopyAddress, copy_address};
 use std::{thread, time::Duration, io::stdout, io::Write};
 use winapi::um::winuser;
+use clearscreen;
+use warp;
 
 // Local library
 use entities::player;
+use utils::memory::{get_module, ProcessModule, read_memory, read_string};
 
-// features
+// Features
 use features::triggerbot::triggetbot;
 use features::radar::radar;
 
@@ -26,10 +27,12 @@ use cs2_offsets::engine2_dll;
 use cs2_offsets::offsets;
 use cs2_offsets::server_dll;
 
-// define a constant
+// define constants
 static BUILD_NUMBER: usize = 13985;
 static DEBUG: bool = false;
 static TRIGGERBOT_KEY: i32 = winuser::VK_MENU;
+static RADAR_FILE_PATH: &str = "res/radar.json";
+
 
 fn main() {
     println!("(+) Starting CS Radar Hack!");
@@ -98,7 +101,7 @@ fn main() {
     let radar_handle = thread::spawn(move || {
         let mut i = 0;
         while i < 1 {
-            unsafe { radar(process_id, entity_list) };
+            unsafe { radar(process_id, entity_list, RADAR_FILE_PATH) };
             print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
             thread::sleep(SLEEP_TIME);
 
