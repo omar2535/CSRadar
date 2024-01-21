@@ -31,7 +31,7 @@ use cs2_offsets::server_dll;
 static BUILD_NUMBER: usize = 13985;
 static DEBUG: bool = false;
 static TRIGGERBOT_KEY: i32 = winuser::VK_MENU;
-static RADAR_FILE_PATH: &str = "res/radar.json";
+static RADAR_FILE_PATH: &str = "frontend/res/radar.json";
 
 
 fn main() {

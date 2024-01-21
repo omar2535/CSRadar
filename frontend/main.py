@@ -1,42 +1,57 @@
 from pathlib import Path
 
-import json
-import numpy
 import os
+import time
+import json
+import numpy as np
+import matplotlib.pyplot as plt
 
 # Setting some constants
+CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 MAP_NAME = "de_dust2"
-RADAR_PATH = "res/radar.json"
 
-background_path = Path(f"res/{MAP_NAME}/background.png")
-map_data_path = Path(f"res/{MAP_NAME}/data.json")
-radar_path = Path(f"res/{MAP_NAME}/radar.png")
+MAP_DATA_PATH = Path(Path(CUR_DIR) / "static" / MAP_NAME / "data.json")
+RADAR_PNG_PATH = Path(Path(CUR_DIR) / "static" / MAP_NAME / "radar.png")
+RADAR_PATH = Path(Path(CUR_DIR) / "res" / "radar.json")
 
-with open(map_data_path, "r") as file:
+with open(MAP_DATA_PATH, "r") as file:
     map_data = json.load(file)
 
-with open(RADAR_PATH, "r") as file:
-    radar_data = json.load(file)
+while True:
+    # Read the radar information
+    try:
+        with open(RADAR_PATH, "r") as file:
+            radar_data = json.load(file)
+    except Exception as e:
+        time.sleep(0.001)
 
+    # Get the canvas ready to draw
+    plt.clf()
+    image = plt.imread(RADAR_PNG_PATH)
+    plt.imshow(image)
 
-for player in radar_data["players"]:
-    # Get the scale of the radar and coordinates
-    scale = radar_data["scale"]
-    world_space_x = radar_data["x"]
-    world_space_y = radar_data["y"]
+    for player in radar_data:
+        # Get the scale of the radar and coordinates
+        scale = map_data["scale"]
+        world_space_x = map_data["x"]
+        world_space_y = map_data["y"]
 
-    # Get the player's position
-    x = player["position"]["x"]
-    y = player["position"]["y"]
-    z = player["position"]["z"]
+        # Get the player's position
+        x = player["position"]["x"]
+        y = player["position"]["y"]
+        z = player["position"]["z"]
 
-    # Convert the player's position to the radar's coordinate system
-    player_map_x_position = (world_space_x - x) / scale
-    player_map_y_position = (world_space_y - y) / scale
+        # Convert the player's position to the radar's coordinate system
+        player_map_x_position = (world_space_x - x) * -1.0 / scale
+        player_map_y_position = (world_space_y - y) / scale
 
+        # Determine dot color
+        if player["team"] == 2:
+            dot_color = 'red'
+        else:
+            dot_color = 'blue'
 
+        plt.plot(player_map_x_position, player_map_y_position, marker='o', color=dot_color)
 
-
-
-# Do something with the data
-breakpoint()
+    # Show the plot
+    plt.show()
