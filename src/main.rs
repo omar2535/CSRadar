@@ -25,6 +25,8 @@ use cs2_offsets::engine2_dll;
 use cs2_offsets::offsets;
 use cs2_offsets::server_dll;
 
+use crate::features::radar::radar;
+
 // define a constant
 static BUILD_NUMBER: usize = 13985;
 static DEBUG: bool = false;
@@ -92,55 +94,20 @@ fn main() {
 
     // main hack loop
     // TODO: REFACTOR THIS -- ITS JUST DUPLICATING CODE
-    if !DEBUG {
-        loop {
-            // regular player statistics
-            let mut player_index: usize = 0;
-            let mut players: Vec<player::Player> = Vec::new();
-            while player_index < 64 {
-                player_index += 1;
-                let player_entity: player::Player = player::get_player_entity(process_id, entity_list, player_index);
-                if player_entity.player_controller_addr != 0 {
-                    players.push(player_entity);
-                }
-            }
-            player::print_players(&players);
+    let mut step_by = 0;
+    if DEBUG { step_by = 1; }
 
-            // other features
-            // run my features
-            unsafe { triggetbot(process_id, &client, entity_list, TRIGGERBOT_KEY) };
-
-            // clear the screen
-            // clearscreen::clear().expect("Failed to clear screen!");
-            print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
-            thread::sleep(SLEEP_TIME);
-        }
-    } else {
-        // regular player statistics
-        let mut player_index: usize = 0;
-        let mut players: Vec<player::Player> = Vec::new();
-        while player_index < 64 {
-            player_index += 1;
-            let player_entity: player::Player = player::get_player_entity(process_id, entity_list, player_index);
-            if player_entity.player_controller_addr != 0 {
-                players.push(player_entity);
-            }
-        }
-        player::print_players(&players);
-
-        // other features
+    for _x in (0..1).step_by(step_by) {
         // run my features
-        unsafe { triggetbot(process_id, &client, entity_list, TRIGGERBOT_KEY) };
-    }
+        unsafe { radar(process_id, entity_list) };
 
-    // TODO: Remove this
-    // let mut player_index: usize = 0;
-    // let mut players: Vec<player::Player> = Vec::new();
-    // while player_index < 16 {
-    //     player_index += 1;
-    //     let player_entity: player::Player = player::get_player_entity(process_id, entity_list, player_index);
-    //     player::print_player(&player_entity);
-    // }
+        unsafe { triggetbot(process_id, &client, entity_list, TRIGGERBOT_KEY) };
+
+        // clear the screen
+        // clearscreen::clear().expect("Failed to clear screen!");
+        print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+        thread::sleep(SLEEP_TIME);
+    }
 
     println!("(+) Stopping CS Radar Hack!");
 }
