@@ -29,6 +29,7 @@ Backend:
 
 ```ps1
 cargo run 2>$null
+# or cargo run 2>$null | out-null
 ```
 
 Frontend:
@@ -36,6 +37,7 @@ Frontend:
 ```ps1
 cd frontend-react
 serve -s build
+# or serve -s --no-request-logging build
 ```
 
 **Bash:**
