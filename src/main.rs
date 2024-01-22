@@ -31,8 +31,10 @@ use cs2_offsets::server_dll;
 static BUILD_NUMBER: usize = 13985;
 static DEBUG: bool = false;
 static TRIGGERBOT_KEY: i32 = winuser::VK_MENU;
-static RADAR_FILE_PATH: &str = "frontend-react/public/radar.json";
 
+// While debugging using the debug server for frontend, use "frontend-react/public/radar.json"
+static RADAR_FILE_PATH: &str = "frontend-react/build/radar.json";
+// static RADAR_FILE_PATH: &str = "frontend-react/public/radar.json";
 
 fn main() {
     println!("(+) Starting CS Radar Hack!");

@@ -4,19 +4,19 @@
     "player_pawn_addr": 2270688716800,
     "team": 2,
     "health": 100,
-    "armor": 0,
+    "armor": 100,
     "name": "Bot Cargo",
     "position": {
-      "x": -657.27136,
-      "y": -755.87964,
-      "z": 119.88401
+      "x": 32.10467,
+      "y": 2097.9216,
+      "z": -125.68414
     }
   },
   {
     "player_controller_addr": 2271750326784,
     "player_pawn_addr": 2270778228736,
     "team": 3,
-    "health": 100,
+    "health": 0,
     "armor": 0,
     "name": "Efe",
     "position": {
@@ -29,7 +29,7 @@
     "player_controller_addr": 2271750329344,
     "player_pawn_addr": 2271750914048,
     "team": 2,
-    "health": 100,
+    "health": 78,
     "armor": 0,
     "name": "Oli",
     "position": {
@@ -42,7 +42,7 @@
     "player_controller_addr": 2271750331904,
     "player_pawn_addr": 2271750924288,
     "team": 3,
-    "health": 100,
+    "health": 0,
     "armor": 0,
     "name": "Wesley",
     "position": {
@@ -55,7 +55,7 @@
     "player_controller_addr": 2271750334464,
     "player_pawn_addr": 2271750979584,
     "team": 2,
-    "health": 100,
+    "health": 0,
     "armor": 0,
     "name": "Panama",
     "position": {
@@ -81,7 +81,7 @@
     "player_controller_addr": 2271750339584,
     "player_pawn_addr": 2271751045120,
     "team": 3,
-    "health": 100,
+    "health": 0,
     "armor": 0,
     "name": "Azul",
     "position": {
@@ -94,7 +94,7 @@
     "player_controller_addr": 2271750342144,
     "player_pawn_addr": 2271751055360,
     "team": 2,
-    "health": 100,
+    "health": 0,
     "armor": 0,
     "name": "Walt",
     "position": {
@@ -107,7 +107,7 @@
     "player_controller_addr": 2271769722880,
     "player_pawn_addr": 2271758123008,
     "team": 2,
-    "health": 100,
+    "health": 10,
     "armor": 0,
     "name": "Rivers",
     "position": {
@@ -120,7 +120,7 @@
     "player_controller_addr": 2271769725440,
     "player_pawn_addr": 2271758133248,
     "team": 3,
-    "health": 100,
+    "health": 0,
     "armor": 0,
     "name": "Maru",
     "position": {

@@ -42,14 +42,27 @@ class Radar extends Component {
                         let player_x = (mapData['x'] - player['position']['x']) * -1.0 / mapData['scale'];
                         let player_y = (mapData['y'] - player['position']['y']) * 1.0 / mapData['scale'];
                         let player_team = player['team'];
-                        let player_color = player_team === 2 ? 'red' : 'blue';
 
-                        // console.log(player_x, player_y);
-                        ctx.beginPath();
-                        ctx.arc(player_x, player_y, 10, 0, 2 * Math.PI);
-                        ctx.fillStyle = player_color;
-                        ctx.fill();
-                        ctx.closePath();
+                        // set player color
+                        let r = 0;
+                        let g = 255 * (100 - player["health"]) / 100;
+                        let b = 0;
+                        if (player_team === 2) {
+                            r = 255;
+                        } else {
+                            b = 255;
+                        }
+
+                        let player_color = `rgb(${r}, ${g}, ${b})`
+
+                        if (player["health"] >= 0) {
+                            // console.log(player_x, player_y);
+                            ctx.beginPath();
+                            ctx.arc(player_x, player_y, 10, 0, 2 * Math.PI);
+                            ctx.fillStyle = player_color;
+                            ctx.fill();
+                            ctx.closePath();
+                        }
                     });
                 });
         })
