@@ -6,12 +6,17 @@ mod entities;
 mod cs2_offsets;
 mod features;
 
+use futures::SinkExt;
 use sysinfo::System;
 use read_process_memory::{Pid, ProcessHandle, CopyAddress, copy_address};
 use std::{thread, time::Duration, io::stdout, io::Write};
 use winapi::um::winuser;
 use clearscreen;
 use warp;
+use warp::Filter;
+use warp::filters::ws::{Message, WebSocket};
+use futures::{FutureExt, StreamExt};
+use std::sync::Arc;
 
 // Local library
 use entities::player;
@@ -36,7 +41,8 @@ static TRIGGERBOT_KEY: i32 = winuser::VK_MENU;
 static RADAR_FILE_PATH: &str = "frontend-react/build/radar.json";
 // static RADAR_FILE_PATH: &str = "frontend-react/public/radar.json";
 
-fn main() {
+#[tokio::main]
+async fn main() {
     println!("(+) Starting CS Radar Hack!");
 
     // Initialize some constants
@@ -122,6 +128,16 @@ fn main() {
         }
     });
 
+    // define the websocket route
+    let routes = warp::path("ws")
+        .and(warp::ws())
+        .map(move |ws: warp::ws::Ws| {
+            ws.on_upgrade(move |websocket| {
+                handle_websocket_client(websocket, process_id, entity_list)
+            })
+        });
+
+    warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 
     // Join the threads back
     radar_handle.join().unwrap();
@@ -129,4 +145,15 @@ fn main() {
 
 
     println!("(+) Stopping CS Radar Hack!");
+}
+
+// handle the client -- simply just upload tha latest player information
+async fn handle_websocket_client(websocket: WebSocket, process_id: Pid, entity_list: usize) {
+    let (mut sender, mut receiver) = websocket.split();
+    loop {
+        let players: Vec<player::Player> = unsafe { radar(process_id, entity_list, RADAR_FILE_PATH) };
+        let json_data = serde_json::to_string_pretty(&players).unwrap();
+        sender.send(Message::text(json_data)).await.unwrap();
+        thread::sleep(Duration::from_millis(1000));
+    }
 }

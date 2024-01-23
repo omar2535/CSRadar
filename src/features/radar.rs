@@ -14,7 +14,7 @@ use serde::{Serialize, Deserialize};
 use std::fs::File;
 
 // main triggerbot function
-pub unsafe fn radar(process_id: Pid, entity_list: usize, file_path: &str) {
+pub unsafe fn radar(process_id: Pid, entity_list: usize, file_path: &str) -> Vec<player::Player> {
     // regular player statistics
     let mut player_index: usize = 0;
     let mut players: Vec<player::Player> = Vec::new();
@@ -26,7 +26,10 @@ pub unsafe fn radar(process_id: Pid, entity_list: usize, file_path: &str) {
         }
     }
     player::print_players(&players);
-    write_players_to_json(&players, file_path);
+    // write_players_to_json(&players, file_path);
+
+
+    return players;
 }
 
 // write players to file

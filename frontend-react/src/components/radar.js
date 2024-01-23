@@ -73,7 +73,7 @@ class Radar extends Component {
 
     componentDidMount() {
         this.updateRadar();
-        setInterval(this.updateRadar, 500);
+        setInterval(this.updateRadar, 50);
     }
 
     render() {
