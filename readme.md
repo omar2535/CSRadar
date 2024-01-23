@@ -1,53 +1,70 @@
-# Omar's CS Radar Hack in rust
+<h1 style="text-align: center;"> Omar's Counter Strike Radar </h1>
 
-Offsets: [CS2-OFFSETS](https://github.com/sezzyaep/CS2-OFFSETS)
+Hello, this is yet another counter-strike hack written in Rust and a wee bit of react. A lot of inspiration was taken from [cs2_webradar](https://github.com/clauadv/cs2_webradar) so please check out their repository! Mainly, I also use websockets here to push player information to the frontend.
 
-Not much else here, still a WIP
+As always, this is for pure educational purposes and should not be used in competitive settings. This program **does not attempt** to bypass any detection mechanisms (such as VAC / FACEIT / ect.), so it is very easily detected.
 
-## Setup
+<h2 style="text-align: center;"> Preview </h2>
 
-Backend
+![Radar](docs/radar.png)
+
+## Installation
+
+The pre-requisites to running this program is to first have the following installed on your computer:
+
+- [Rust-lang](https://www.rust-lang.org/)
+- [NodeJs](https://nodejs.org/en/download)
+
+**Backend:**
 
 ```ps1
-cargo build
+(CSRadar)$ cargo build
 ```
 
-Frontend
+**Frontend:**
 
 ```ps1
-npm install -g
-npm run build
+(CSRadar)$ cd frontend
+(CSRadar/frontend)$ npm install -g
+(CSRadar/frontend)$ npm run build
 ```
+
+## Usage
+
+**Backend:**
+
+```ps1
+(CSRadar)$ cargo run 2>$null
+```
+
+**Frontend:**
+
+```ps1
+(CSRadar)$ cd frontend
+(CSRadar/frontend)$ serve -s build
+```
+
+- Now browse `http://localhost:3000` for the radar UI.
+- *For debugging purposes, the websocket is on `ws://localhost:3030/ws`*
 
 ## Development
 
-To supress errors:
-
-**Powershell:**
-
-Backend:
+**Backend:**
 
 ```ps1
-cargo run 2>$null
-# or cargo run 2>$null | out-null
+cargo run
 ```
 
-Frontend:
+**Frontend:**
 
 ```ps1
-cd frontend-react
-serve -s build
-# or serve -s --no-request-logging build
-```
-
-**Bash:**
-
-```sh
-cargo run 2> /dev/null
+npm start
 ```
 
 ## To update offsets
 
+Offsets are pulled from [CS2-OFFSETS](https://github.com/sezzyaep/CS2-OFFSETS). To pull the latest offsets, run:
+
 ```ps1
-./bin/update_offsets.ps1
+(CSRadar)$ ./bin/update_offsets.ps1
 ```
