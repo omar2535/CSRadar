@@ -105,19 +105,7 @@ async fn main() {
     let mut step_by = 0;
     if DEBUG { step_by = 1; }
 
-    // run my features
-    let radar_handle = thread::spawn(move || {
-        let mut i = 0;
-        while i < 1 {
-            unsafe { radar(process_id, entity_list, RADAR_FILE_PATH) };
-            print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
-            thread::sleep(SLEEP_TIME);
-
-            // increment the counter (don't increment when running in prod)
-            i += step_by;
-        }
-    });
-
+    // run my features in their own threads
     let triggerbot_handle = thread::spawn(move || {
         let mut i = 0;
         while i < 1 {
@@ -140,9 +128,7 @@ async fn main() {
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 
     // Join the threads back
-    radar_handle.join().unwrap();
     triggerbot_handle.join().unwrap();
-
 
     println!("(+) Stopping CS Radar Hack!");
 }
