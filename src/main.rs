@@ -140,6 +140,6 @@ async fn handle_websocket_client(websocket: WebSocket, process_id: Pid, entity_l
         let players: Vec<player::Player> = unsafe { radar(process_id, entity_list, RADAR_FILE_PATH) };
         let json_data = serde_json::to_string_pretty(&players).unwrap();
         sender.send(Message::text(json_data)).await.unwrap();
-        thread::sleep(Duration::from_millis(1000));
+        thread::sleep(Duration::from_millis(10));
     }
 }

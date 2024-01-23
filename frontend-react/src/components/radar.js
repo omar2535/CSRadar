@@ -78,7 +78,7 @@ class Radar extends Component {
 
                 let player_color = `rgb(${r}, ${g}, ${b})`
 
-                if (player["health"] >= 0) {
+                if (player["health"] > 0) {
                     ctx.beginPath();
                     ctx.arc(player_x, player_y, 10, 0, 2 * Math.PI);
                     ctx.fillStyle = player_color;
@@ -107,13 +107,15 @@ class Radar extends Component {
         return (
             <div>
                 <h1>CSRadar</h1>
-                <select onChange={this.selectionChange}>
-                    {this.mapNames.map((folderName, index) => (
-                        <option key={index} value={folderName}>{folderName}</option>
-                    ))}
-                </select>
-                <canvas id="radar-canvas" style={{ width: '100vw' }}>
-                    <img id="radar-image" src={imagePath} alt="Radar" style={{ width: '100vw' }} />
+                <div>
+                    <select onChange={this.selectionChange}>
+                        {this.mapNames.map((folderName, index) => (
+                            <option key={index} value={folderName}>{folderName}</option>
+                        ))}
+                    </select>
+                </div>
+                <canvas id="radar-canvas" style={{ width: '80vw' }}>
+                    <img id="radar-image" src={imagePath} alt="Radar" style={{ width: '80vw' }} />
                 </canvas>
             </div>
         );

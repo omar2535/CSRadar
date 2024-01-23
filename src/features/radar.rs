@@ -25,7 +25,7 @@ pub unsafe fn radar(process_id: Pid, entity_list: usize, file_path: &str) -> Vec
             players.push(player_entity);
         }
     }
-    player::print_players(&players);
+    // player::print_players(&players);
     // write_players_to_json(&players, file_path);
 
 
