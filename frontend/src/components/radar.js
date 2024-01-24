@@ -25,8 +25,9 @@ class Radar extends Component {
     }
 
     selectionChange = (event) => {
-        this.setState({ selectedMap: event.target.value });
-        this.updateMap();
+        this.setState({ selectedMap: event.target.value }, () => {
+            this.updateMap();
+        });
     }
 
     updateMap = () => {
@@ -50,11 +51,12 @@ class Radar extends Component {
         const socket = new WebSocket(websocketURL);
 
         socket.onmessage = (event) => {
-            console.log(event);
             const playerData = JSON.parse(event.data);
             const canvas = document.getElementById('radar-canvas');
             const ctx = canvas.getContext('2d');
             const image = document.getElementById('radar-image');
+
+            // console.log(playerData);
 
             canvas.width = image.width;
             canvas.height = image.height;
