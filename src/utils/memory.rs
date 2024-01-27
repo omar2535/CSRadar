@@ -96,7 +96,7 @@ pub unsafe fn read_string(pid: Pid, address: usize, length: usize) -> String {
             let bytes_clone: Vec<u8> = bytes.clone();
             let mut res: String = match String::from_utf8(bytes_clone) {
                 Ok(res) => res,
-                Err(_) => { println!("Found invalid UTF-8, giving default name"); String::from("Unknown") }
+                Err(_) => { eprintln!("Found invalid UTF-8, giving default name"); String::from("Unknown") }
             };
             res = res.trim_matches(char::from(0)).to_string();
             return res.to_owned();
