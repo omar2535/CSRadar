@@ -1,6 +1,6 @@
 /*
- * Generated using https://github.com/a2x/cs2-dumper
- * Wed, 20 Mar 2024 01:24:47 +0000
+ * Dumped With FrezzyHook.com https://frezzyhook.com
+ * Thu, 21 Mar 2024 03:23:32 +0000
  */
 
 #![allow(non_snake_case, non_upper_case_globals)]
