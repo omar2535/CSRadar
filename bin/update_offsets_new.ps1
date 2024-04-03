@@ -7,9 +7,9 @@ Write-Output "Updating offsets"
 $GIT_REPO = "https://github.com/a2x/cs2-dumper/raw/main"
 $OFFSET_SRC_PATH = "src/cs2_offsets"
 
-Invoke-WebRequest -Uri "$GIT_REPO/generated/client.dll.rs" -OutFile "$OFFSET_SRC_PATH/client_dll.rs"
-Invoke-WebRequest -Uri "$GIT_REPO/generated/engine2.dll.rs" -OutFile "$OFFSET_SRC_PATH/engine2_dll.rs"
-Invoke-WebRequest -Uri "$GIT_REPO/generated/offsets.rs" -OutFile "$OFFSET_SRC_PATH/offsets.rs"
-Invoke-WebRequest -Uri "$GIT_REPO/generated/server.dll.rs" -OutFile "$OFFSET_SRC_PATH/server_dll.rs"
+Invoke-WebRequest -Uri "$GIT_REPO/output/client.dll.rs" -OutFile "$OFFSET_SRC_PATH/client_dll.rs"
+Invoke-WebRequest -Uri "$GIT_REPO/output/engine2.dll.rs" -OutFile "$OFFSET_SRC_PATH/engine2_dll.rs"
+Invoke-WebRequest -Uri "$GIT_REPO/output/offsets.rs" -OutFile "$OFFSET_SRC_PATH/offsets.rs"
+Invoke-WebRequest -Uri "$GIT_REPO/output/server.dll.rs" -OutFile "$OFFSET_SRC_PATH/server_dll.rs"
 
 Write-Output "Offsets updated! Remember to commit and push!"
