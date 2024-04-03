@@ -2,6 +2,7 @@
 #![allow(unused_imports)]
 #![allow(unused_variables)]
 #![allow(unused_mut)]
+#[allow(overflowing_literals)]
 
 mod utils;
 mod entities;
@@ -32,7 +33,10 @@ use features::radar::radar;
 use cs2_offsets::client_dll;
 use cs2_offsets::engine2_dll;
 use cs2_offsets::offsets;
-use cs2_offsets::server_dll;
+
+// Use offsets from cs2 offsets
+use cs2_offsets::offsets::cs2_dumper::offsets as offset_source;
+use cs2_offsets::client_dll::cs2_dumper::schemas as client_offset_source;
 
 // define constants
 static BUILD_NUMBER: usize = 13985;
@@ -76,20 +80,20 @@ async fn main() {
     let engine: ProcessModule = unsafe {get_module(BASE_ENGINE_NAME, process_id)};
 
     // Get the build number
-    let build_number: usize = unsafe{ read_memory(process_id, engine.base + offsets::engine2_dll::dwBuildNumber, 4) };
+    let build_number: usize = unsafe{ read_memory(process_id, engine.base + offset_source::engine2_dll::dwBuildNumber, 4) };
     println!("(+) Build number: {} | Expected build number: {}", build_number, BUILD_NUMBER);
     println!("(+) Build number checker: {}", build_number == BUILD_NUMBER);
 
     // Get the entity list
-    let entity_list: usize = unsafe { read_memory(process_id, client.base + offsets::client_dll::dwEntityList, 8) };
+    let entity_list: usize = unsafe { read_memory(process_id, client.base + offset_source::client_dll::dwEntityList, 8) };
     println!("(+) Entity list: 0x{:x}", entity_list);
 
     // Get the local player
-    let local_player: usize = unsafe{ read_memory(process_id, client.base + offsets::client_dll::dwLocalPlayerController, 8) };
+    let local_player: usize = unsafe{ read_memory(process_id, client.base + offset_source::client_dll::dwLocalPlayerController, 8) };
     println!("(+) Local player: 0x{:x}", local_player);
 
     // Get the local player's team - 2 for T, 3 for CT
-    let local_player_team: usize = unsafe{ read_memory(process_id, local_player + client_dll::C_BaseEntity::m_iTeamNum, 4) };
+    let local_player_team: usize = unsafe{ read_memory(process_id, local_player + client_offset_source::client_dll::C_BaseEntity::m_iTeamNum, 4) };
     println!("(+) Local player team: 0x{:x}", local_player_team);
 
     // sanity check before proceeding

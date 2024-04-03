@@ -8,6 +8,10 @@ use read_process_memory::{Pid, ProcessHandle, CopyAddress, copy_address};
 use winapi::um::winuser::{GetAsyncKeyState, VK_SHIFT};
 use rand::Rng;
 
+// cs2 offsets
+use cs2_offsets::offsets::cs2_dumper::offsets as offset_source;
+use cs2_offsets::client_dll::cs2_dumper::schemas as client_offset_source;
+
 // main triggerbot function
 pub unsafe fn triggetbot(process_id: Pid, client: &ProcessModule, entity_list: usize, key: i32) {
     // early guard to exit if the key isn't being presssed
@@ -16,8 +20,8 @@ pub unsafe fn triggetbot(process_id: Pid, client: &ProcessModule, entity_list: u
     }
 
     // read player information
-    let player: usize = memory::read_memory(process_id, client.base + cs2_offsets::offsets::client_dll::dwLocalPlayerPawn, 8);
-    let pointed_entity_id: isize = memory::read_int(process_id, player + cs2_offsets::client_dll::C_CSPlayerPawnBase::m_iIDEntIndex, 4);
+    let player: usize = memory::read_memory(process_id, client.base + offset_source::client_dll::dwLocalPlayerPawn, 8);
+    let pointed_entity_id: isize = memory::read_int(process_id, player + client_offset_source::client_dll::C_CSPlayerPawnBase::m_iIDEntIndex, 4);
 
     // means we are pointing at some entity
     if pointed_entity_id > 0 {
@@ -26,8 +30,8 @@ pub unsafe fn triggetbot(process_id: Pid, client: &ProcessModule, entity_list: u
         let list_entry: usize = unsafe{ memory::read_memory(process_id, entity_list + (8 * ((pointed_player_index as usize & 0x7FFF) >> 9)) + 16, 8) };
         let pointed_player_controller: usize = unsafe{ memory::read_memory(process_id, list_entry + 120 * (pointed_player_index as usize & 0x1FF), 8) };
 
-        let pointed_player_team: usize = unsafe{ memory::read_memory(process_id, pointed_player_controller + cs2_offsets::client_dll::C_BaseEntity::m_iTeamNum, 4) };
-        let player_team: usize = unsafe{ memory::read_memory(process_id, player + cs2_offsets::client_dll::C_BaseEntity::m_iTeamNum, 4) };
+        let pointed_player_team: usize = unsafe{ memory::read_memory(process_id, pointed_player_controller + client_offset_source::client_dll::C_BaseEntity::m_iTeamNum, 4) };
+        let player_team: usize = unsafe{ memory::read_memory(process_id, player + client_offset_source::client_dll::C_BaseEntity::m_iTeamNum, 4) };
 
         // fire if the pointed player is not on our team
         if pointed_player_team != player_team {

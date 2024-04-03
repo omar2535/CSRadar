@@ -4,6 +4,10 @@ use crate::cs2_offsets::client_dll;
 use read_process_memory::{Pid, ProcessHandle, CopyAddress, copy_address};
 use serde::{Serialize, Deserialize};
 
+// Use offsets from cs2 offsets
+use crate::cs2_offsets::offsets::cs2_dumper::offsets as offset_source;
+use crate::cs2_offsets::client_dll::cs2_dumper::schemas as client_offset_source;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Player {
     pub player_controller_addr: usize,
@@ -32,16 +36,16 @@ pub fn get_player_entity(process_id: Pid, entity_list: usize, player_index: usiz
     let player_controller: usize = unsafe{ memory::read_memory(process_id, list_entry + 120 * (player_index & 0x1FF), 8) };
 
     // find the player pawn
-    let pawn_handle: usize = unsafe{ memory::read_memory(process_id, player_controller + client_dll::CCSPlayerController::m_hPlayerPawn, 8) };
+    let pawn_handle: usize = unsafe{ memory::read_memory(process_id, player_controller + client_offset_source::client_dll::CCSPlayerController::m_hPlayerPawn, 8) };
     let list_entry_2: usize = unsafe{ memory::read_memory(process_id, entity_list + 8 * ((pawn_handle & 0x7FFF) >> 9) + 16, 8) };
     let player_pawn: usize = unsafe{ memory::read_memory(process_id, list_entry_2 + 120 * (pawn_handle & 0x1FF), 8) };
 
     // get information
-    let player_team: usize = unsafe{ memory::read_memory(process_id, player_controller + client_dll::C_BaseEntity::m_iTeamNum, 4) };
-    let player_name: String = unsafe { memory::read_string(process_id, player_controller + client_dll::CBasePlayerController::m_iszPlayerName, 16) };
+    let player_team: usize = unsafe{ memory::read_memory(process_id, player_controller + client_offset_source::client_dll::C_BaseEntity::m_iTeamNum, 4) };
+    let player_name: String = unsafe { memory::read_string(process_id, player_controller + client_offset_source::client_dll::CBasePlayerController::m_iszPlayerName, 16) };
 
-    let player_health: usize = unsafe{ memory::read_memory(process_id, player_pawn + client_dll::C_BaseEntity::m_iHealth, 4) };
-    let player_armor: usize = unsafe { memory::read_memory(process_id, player_pawn + client_dll::C_CSPlayerPawnBase::m_ArmorValue, 4) };
+    let player_health: usize = unsafe{ memory::read_memory(process_id, player_pawn + client_offset_source::client_dll::C_BaseEntity::m_iHealth, 4) };
+    let player_armor: usize = unsafe { memory::read_memory(process_id, player_pawn + client_offset_source::client_dll::C_CSPlayerPawnBase::m_ArmorValue, 4) };
     let player_position: Position = get_player_position(process_id, player_pawn);
 
     return Player {
@@ -56,9 +60,9 @@ pub fn get_player_entity(process_id: Pid, entity_list: usize, player_index: usiz
 }
 
 fn get_player_position(process_id: Pid, player_pawn: usize) -> Position {
-    let player_position_x: f32 = unsafe { memory::read_float(process_id, player_pawn + client_dll::C_BasePlayerPawn::m_vOldOrigin) };
-    let player_position_y: f32 = unsafe { memory::read_float(process_id, player_pawn + client_dll::C_BasePlayerPawn::m_vOldOrigin + 4) };
-    let player_position_z: f32 = unsafe { memory::read_float(process_id, player_pawn + client_dll::C_BasePlayerPawn::m_vOldOrigin + 8) };
+    let player_position_x: f32 = unsafe { memory::read_float(process_id, player_pawn + client_offset_source::client_dll::C_BasePlayerPawn::m_vOldOrigin) };
+    let player_position_y: f32 = unsafe { memory::read_float(process_id, player_pawn + client_offset_source::client_dll::C_BasePlayerPawn::m_vOldOrigin + 4) };
+    let player_position_z: f32 = unsafe { memory::read_float(process_id, player_pawn + client_offset_source::client_dll::C_BasePlayerPawn::m_vOldOrigin + 8) };
 
     return Position {
         x: player_position_x,
