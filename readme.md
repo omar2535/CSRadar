@@ -1,6 +1,6 @@
-<h1 style="text-align: center;"> Omar's Counter Strike Radar </h1>
+<h1 style="text-align: center;"> Omar's CSRadar </h1>
 
-Hello, this is yet another counter-strike hack written in Rust and a wee bit of react. A lot of inspiration was taken from [cs2_webradar](https://github.com/clauadv/cs2_webradar) so please check out their repository! Mainly, I also use websockets here to push player information to the frontend.
+Hello, this is yet another counter-strike trainer written in Rust and a wee bit of react. A lot of inspiration was taken from [cs2_webradar](https://github.com/clauadv/cs2_webradar) so please check out their repository! Mainly, I also use WebSockets here to push player information to the front end.
 
 As always, this is for pure educational purposes and should not be used in competitive settings. This program **does not attempt** to bypass any detection mechanisms (such as VAC / FACEIT / ect.), so it is very easily detected.
 
